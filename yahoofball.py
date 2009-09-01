@@ -81,7 +81,7 @@ class YahooFFStats(object):
 
     def getScoreboard(self, soup):
         matchUpList = []
-        scoreboard = soup.find('div', id='fantasytab')#, class='scoreboard')
+        scoreboard = soup.find('div', id='fantasytab')
         for matchUp in scoreboard.findAll("table"):
             matchUpDict = {}
             lastTeam = ""
@@ -137,7 +137,7 @@ def main():
         contentBuffer += "Streak: %s\n\n" % eTeam['streak']
     pub.createItem({"title": "FF Standings %s" %
                     datetime.datetime.now().isoformat(),
-                    "content": contentBuffer})
+                    "content": contentBuffer.replace("\n", "<br>")})
 
     scoreBuffer = "Fantasy Football Scoreboard:\n\n"
     for matchUp in scoreboard:
@@ -146,7 +146,7 @@ def main():
         scoreBuffer = scoreBuffer[:-4] + "\n"
     pub.createItem({"title": "FF Scoreboard %s" %
                     datetime.datetime.now().isoformat(),
-                    "content": scoreBuffer})
+                    "content": scoreBuffer.replace("\n", "<br>")})
 
     pub.write()
     print contentBuffer
