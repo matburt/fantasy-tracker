@@ -1,20 +1,28 @@
 import ClientForm
 import urllib2
 import mechanize
-import optparse
 import sys
 import datetime
 from BeautifulSoup import BeautifulSoup
-from ConfigParser import RawConfigParser
 
 class YahooFFStats(object):
 
     cookies = False
 
     def __init__(self, yahooLogin, url):
+        """
+        yahooLogin should be a dictionary that looks like this:
+             {'user': 'actual_username',
+             'passwd': 'actual_password'}
+
+        url should be be the full url to the leage
+        (# replace with the leage number):
+             http://football.fantasysports.yahoo.com/f1/######
+        """
         self.cj = mechanize.CookieJar()
         self.yahooLogin = yahooLogin
         self.url = url
+        self.maincontent = ""
 
     def genStats(self):
         self.cj = mechanize.CookieJar()
@@ -31,15 +39,17 @@ class YahooFFStats(object):
         request3 = mechanize.Request(self.url)
         self.cj.add_cookie_header(request3)
         response3 = mechanize.urlopen(request3)
-        return self.readMainPage(response3.read())
+        self.maincontent = response3.read()
+        self.soup = BeautifulSoup(self.maincontent)
 
     def getStandings(self, soup):
         standings = soup.find('table', id='standingstable')
         table_body = standings.tbody
 
         standingsList = []
-        teamMapping = ['rank', 'team', 'w/l/t', 'winperc', 'pts',
-                       'streak', 'waiver', 'moves']
+        teamMapping = ['rank', 'team', 'wlt',
+                       'winperc', 'pts', 'streak',
+                       'waiver', 'moves']
         for fTeam in table_body.findAll('tr'):
             teamItem = {}
             itemIndex = 0
@@ -67,8 +77,7 @@ class YahooFFStats(object):
             matchUpList.append(matchUpDict)
         return matchUpList
 
-    def readMainPage(self, data):
-        soup = BeautifulSoup(data)
-        standings = self.getStandings(soup)
-        scoreboard = self.getScoreboard(soup)
+    def getScoreboardAndStandings(self):
+        standings = self.getStandings(self.soup)
+        scoreboard = self.getScoreboard(self.soup)
         return (standings, scoreboard)

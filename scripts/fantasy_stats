@@ -1,4 +1,8 @@
 import PyRSS2Gen
+import optparse
+import sys
+import datetime
+from ConfigParser import RawConfigParser
 from ftracker.yahoo import YahooFFStats
 
 class FFStatPublisher(object):
@@ -53,12 +57,13 @@ def main():
                           config.get('rss', 'title'),
                           config.get('rss', 'url'))
 
-    standings, scoreboard = fs.genStats()
+    fs.genStats()
+    standings, scoreboard = fs.getScoreboardAndStandings()
     contentBuffer = "Fantasy Football Standings:\n\n"
     for eTeam in standings:
         contentBuffer += "%s\n" % eTeam['team']
         contentBuffer += "Rank: %s\n" % eTeam['rank']
-        contentBuffer += "Record: %s\n" % eTeam['w/l/t']
+        contentBuffer += "Record: %s\n" % eTeam['wlt']
         contentBuffer += "Win Percentage: %s\n" % eTeam['winperc']
         contentBuffer += "Points: %s\n" % eTeam['pts']
         contentBuffer += "Streak: %s\n\n" % eTeam['streak']
