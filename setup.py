@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 
 requirements = ['ClientForm',
-                'PyRSS2Gen',
                 'mechanize',
                 'BeautifulSoup'
                ]

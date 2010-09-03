@@ -25,6 +25,10 @@ class YahooFFStats(object):
         self.maincontent = ""
 
     def genStats(self):
+        """
+        After creating an instance run this method to parse the url
+        for all of the data
+        """
         self.cj = mechanize.CookieJar()
         if not self.cookies:
             initialRequest = mechanize.Request(self.url)
@@ -42,7 +46,28 @@ class YahooFFStats(object):
         self.maincontent = response3.read()
         self.soup = BeautifulSoup(self.maincontent)
 
+    def getScoreboardAndStandings(self):
+        """
+        Return a tuple containing the standings and the scoreboard"
+        """
+        standings = self.getStandings(self.soup)
+        scoreboard = self.getScoreboard(self.soup)
+        return (standings, scoreboard)
+
     def getStandings(self, soup):
+        """
+        Returns a list (in order from first to last) of all teams in the league
+        and stats about them:
+        [
+         {'team': ...
+          'rank': ...
+          'record': ...
+          'winperc': ...
+          'points': ...
+          'streak': ...
+         },...
+        ]
+        """
         standings = soup.find('table', id='standingstable')
         table_body = standings.tbody
 
@@ -64,6 +89,14 @@ class YahooFFStats(object):
         return standingsList
 
     def getScoreboard(self, soup):
+        """
+        Returns the scoreboard as a list:
+        [
+         {'teamname': 123.4,
+          'teamname': 125.6
+         },...
+        ]
+        """
         matchUpList = []
         scoreboard = soup.find('div', id='fantasytab')
         for matchUp in scoreboard.findAll("table"):
@@ -76,8 +109,3 @@ class YahooFFStats(object):
                     lastTeam = eTd.div.first().string
             matchUpList.append(matchUpDict)
         return matchUpList
-
-    def getScoreboardAndStandings(self):
-        standings = self.getStandings(self.soup)
-        scoreboard = self.getScoreboard(self.soup)
-        return (standings, scoreboard)

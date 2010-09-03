@@ -1,0 +1,16 @@
+To install this to your system:
+
+# python setup.py install
+
+This will install the library on your system, as well as a script which can be run like this:
+
+$ fantasy_stats -c /path/to/ftracker.conf
+
+where ff.conf looks like this (this is example is in the conf directory):
+
+[main]
+url: http://football.fantasysports.yahoo.com/f1/gamenum
+yahoologin: user
+yahoopasswd: pass
+
+You can also use the API directly, the script is a good example of the usage.

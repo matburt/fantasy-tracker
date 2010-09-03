@@ -1,35 +1,35 @@
-import PyRSS2Gen
+#import PyRSS2Gen
 import optparse
 import sys
 import datetime
 from ConfigParser import RawConfigParser
 from ftracker.yahoo import YahooFFStats
 
-class FFStatPublisher(object):
-
-    def __init__(self, destination,
-                 docTitle='Fantasy Football Stats',
-                 docLink=None):
-        self.destination = destination
-        self.rssGen = PyRSS2Gen.RSS2(
-            title = docTitle,
-            link = docLink,
-            description = docTitle,
-            lastBuildDate = datetime.datetime.now())
-
-    def createItem(self, itemDict):
-        item = PyRSS2Gen.RSSItem(
-            title = itemDict["title"],
-            description = itemDict["content"],
-            pubDate = datetime.datetime.now())
-        self.rssGen.items.append(item)
-
-    def addItems(self, itemList):
-        self.rssGen.items.append(itemList)
-
-    def write(self):
-        self.rssGen.write_xml(open(self.destination, "w"))
-
+#class FFStatPublisher(object):
+#
+#    def __init__(self, destination,
+#                 docTitle='Fantasy Football Stats',
+#                 docLink=None):
+#        self.destination = destination
+#        self.rssGen = PyRSS2Gen.RSS2(
+#            title = docTitle,
+#            link = docLink,
+#            description = docTitle,
+#            lastBuildDate = datetime.datetime.now())
+#
+#    def createItem(self, itemDict):
+#        item = PyRSS2Gen.RSSItem(
+#            title = itemDict["title"],
+#            description = itemDict["content"],
+#            pubDate = datetime.datetime.now())
+#        self.rssGen.items.append(item)
+#
+#    def addItems(self, itemList):
+#        self.rssGen.items.append(itemList)
+#
+#    def write(self):
+#        self.rssGen.write_xml(open(self.destination, "w"))
+#
 
 def getConfig(path):
     rc = RawConfigParser()
@@ -42,7 +42,7 @@ def main():
     op = optparse.OptionParser()
     op.add_option("-c", "--config", dest="config",
                   help="configuration file")
-    op.add_option("-o", "--output", dest="output")
+    #op.add_option("-o", "--output", dest="output")
     (options, args) = op.parse_args()
 
     if options.config is None:
@@ -53,9 +53,9 @@ def main():
     login = {'user': config.get('main','yahoologin'),
              'passwd': config.get('main','yahoopasswd')}
     fs = YahooFFStats(login, config.get('main','url'))
-    pub = FFStatPublisher(options.output,
-                          config.get('rss', 'title'),
-                          config.get('rss', 'url'))
+    #pub = FFStatPublisher(options.output,
+    #                      config.get('rss', 'title'),
+    #                      config.get('rss', 'url'))
 
     fs.genStats()
     standings, scoreboard = fs.getScoreboardAndStandings()
@@ -67,20 +67,19 @@ def main():
         contentBuffer += "Win Percentage: %s\n" % eTeam['winperc']
         contentBuffer += "Points: %s\n" % eTeam['pts']
         contentBuffer += "Streak: %s\n\n" % eTeam['streak']
-    pub.createItem({"title": "FF Standings %s" %
-                    datetime.datetime.now().isoformat(),
-                    "content": contentBuffer.replace("\n", "<br>")})
+    #pub.createItem({"title": "FF Standings %s" %
+    #                datetime.datetime.now().isoformat(),
+    #                "content": contentBuffer.replace("\n", "<br>")})
 
     scoreBuffer = "Fantasy Football Scoreboard:\n\n"
     for matchUp in scoreboard:
         for team in matchUp:
             scoreBuffer += "%s: %s\nvs.\n" % (team, matchUp[team])
         scoreBuffer = scoreBuffer[:-4] + "\n"
-    pub.createItem({"title": "FF Scoreboard %s" %
-                    datetime.datetime.now().isoformat(),
-                    "content": scoreBuffer.replace("\n", "<br>")})
-
-    pub.write()
+    #pub.createItem({"title": "FF Scoreboard %s" %
+    #                datetime.datetime.now().isoformat(),
+    #                "content": scoreBuffer.replace("\n", "<br>")})
+    #pub.write()
     print contentBuffer
     print scoreBuffer
 
